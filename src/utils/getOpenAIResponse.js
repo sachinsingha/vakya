@@ -69,12 +69,13 @@ export async function getOpenAIResponse(prompt, model) {
         messages: [{ role: "user", content: trimmedPrompt }],
       },
       {
-        headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": REFERER_URL,      // ✅ Required by OpenRouter
-          "X-Title": "Vakya Chat App",       // Optional: title for tracking usage
-        },
+       headers: {
+  Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+  "Content-Type": "application/json",
+  "HTTP-Referer": "https://vakya-git-main-sas-projects-3d786727.vercel.app/",
+  "X-Title": "Vakya",
+}
+
       }
     );
     return res.data.choices?.[0]?.message?.content || "⚠️ No response from OpenRouter.";
