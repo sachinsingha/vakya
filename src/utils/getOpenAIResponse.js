@@ -4,19 +4,19 @@ const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-const REFERER_URL = "http://localhost:5173"; // Change when deployed
+const REFERER_URL = "https://vakya.vercel.app"; // ✅ Replace with your deployed domain
 
 /**
- * Returns a response from OpenAI, OpenRouter, or Gemini based on model ID
- * @param {string} prompt - User's message prompt
- * @param {string} model - Model name (e.g., "openai/gpt-3.5-turbo", "gemini/gemini-pro")
+ * Handles chat completions from OpenAI, OpenRouter, or Gemini
+ * @param {string} prompt
+ * @param {string} model
  */
 export async function getOpenAIResponse(prompt, model) {
   const trimmedPrompt = prompt.trim();
   console.log("🧠 Prompt:", trimmedPrompt);
   console.log("🤖 Model selected:", model);
 
-  // Handle OpenAI
+  // ✅ OpenAI
   if (model.startsWith("openai/")) {
     const realModel = model.replace("openai/", "");
     if (!OPENAI_API_KEY) return "❌ OpenAI API key missing.";
@@ -34,14 +34,14 @@ export async function getOpenAIResponse(prompt, model) {
           },
         }
       );
-      return res.data?.choices?.[0]?.message?.content || "⚠️ No response from OpenAI.";
+      return res.data.choices?.[0]?.message?.content || "⚠️ No response from OpenAI.";
     } catch (err) {
       console.error("❌ OpenAI Error:", err.response?.data || err.message);
-      return `❌ OpenAI request failed. ${err.response?.data?.error?.message || err.message}`;
+      return `❌ OpenAI request failed: ${err.response?.data?.error?.message || err.message}`;
     }
   }
 
-  // Handle Gemini
+  // ✅ Gemini
   if (model.startsWith("gemini/")) {
     const realModel = model.replace("gemini/", "");
     if (!GEMINI_API_KEY) return "❌ Gemini API key missing.";
@@ -52,14 +52,14 @@ export async function getOpenAIResponse(prompt, model) {
           contents: [{ parts: [{ text: trimmedPrompt }] }],
         }
       );
-      return res.data?.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ No response from Gemini.";
+      return res.data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ No response from Gemini.";
     } catch (err) {
       console.error("❌ Gemini Error:", err.response?.data || err.message);
-      return `❌ Gemini request failed. ${err.response?.data?.error?.message || err.message}`;
+      return `❌ Gemini request failed: ${err.response?.data?.error?.message || err.message}`;
     }
   }
 
-  // Handle OpenRouter
+  // ✅ OpenRouter (Default fallback)
   if (!OPENROUTER_API_KEY) return "❌ OpenRouter API key missing.";
   try {
     const res = await axios.post(
@@ -72,13 +72,14 @@ export async function getOpenAIResponse(prompt, model) {
         headers: {
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": REFERER_URL,
+          "HTTP-Referer": REFERER_URL,      // ✅ Required by OpenRouter
+          "X-Title": "Vakya Chat App",       // Optional: title for tracking usage
         },
       }
     );
-    return res.data?.choices?.[0]?.message?.content || "⚠️ No response from OpenRouter.";
+    return res.data.choices?.[0]?.message?.content || "⚠️ No response from OpenRouter.";
   } catch (err) {
     console.error("❌ OpenRouter Error:", err.response?.data || err.message);
-    return `❌ OpenRouter request failed. ${err.response?.data?.error?.message || err.message}`;
+    return `❌ OpenRouter request failed: ${err.response?.data?.error?.message || err.message}`;
   }
 }

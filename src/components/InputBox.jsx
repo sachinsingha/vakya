@@ -23,9 +23,8 @@ const LANGUAGES = [
   { label: "🇮🇳 English (India)", code: "en-IN" },
 ];
 
-export function InputBox() {
+export function InputBox({ setIsLoading }) {
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState("");
   const [selectedLang, setSelectedLang] = useState("auto");
@@ -49,7 +48,7 @@ export function InputBox() {
 
   const handleSend = async () => {
     const content = input.trim();
-    if (!content || !currentSessionId || isLoading) return;
+    if (!content || !currentSessionId) return;
 
     const userMsg = { role: "user", content };
     addMessage(userMsg);
@@ -91,7 +90,7 @@ export function InputBox() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("🎤 Speech recognition not supported in this browser.");
+      alert("🎤 Speech recognition not supported.");
       return;
     }
 
@@ -144,7 +143,6 @@ export function InputBox() {
         theme === "dark" ? "bg-zinc-900" : "bg-gray-100"
       }`}
     >
-      {/* 📝 Transcript Live Display */}
       {interimTranscript && (
         <div className="mb-2 text-sm text-yellow-500 font-medium animate-pulse">
           🎙 {interimTranscript}
@@ -152,7 +150,6 @@ export function InputBox() {
       )}
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center">
-        {/* 🌐 Language Selector */}
         <select
           value={selectedLang}
           onChange={(e) => setSelectedLang(e.target.value)}
@@ -165,7 +162,6 @@ export function InputBox() {
           ))}
         </select>
 
-        {/* 🔤 Input + Mic + Send */}
         <div className="flex gap-2 items-center w-full">
           <input
             ref={inputRef}
@@ -184,7 +180,6 @@ export function InputBox() {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
 
-          {/* 🎤 Hold to Talk */}
           <button
             onMouseDown={startListening}
             onMouseUp={stopListening}
@@ -200,17 +195,11 @@ export function InputBox() {
             🎤
           </button>
 
-          {/* 📤 Send */}
           <button
             onClick={handleSend}
-            disabled={isLoading}
             className="bg-blue-600 hover:bg-blue-700 p-2 rounded text-white w-20 flex justify-center items-center"
           >
-            {isLoading ? (
-              <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-            ) : (
-              "Send"
-            )}
+            Send
           </button>
         </div>
       </div>

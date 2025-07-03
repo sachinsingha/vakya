@@ -9,7 +9,12 @@ export default {
     extend: {
       animation: {
         "fade-in": "fadeIn 1s ease-in-out",
-      },
+        
+      }
+      ,
+      animation: {
+    'spin-slow': 'spin 2s linear infinite',
+  },
       keyframes: {
         fadeIn: {
           "0%": { opacity: 0 },
